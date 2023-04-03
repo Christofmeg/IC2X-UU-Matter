@@ -63,12 +63,19 @@ public class ModJEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(GuiMatter.class, 117, 41, 21, 16, MassFabricatorCategory.UID);
 
         registration.addRecipeClickArea(GuiReplicator.class, 78, 14, 20, 54, ReplicatorCategory.UID);
-
+        /**
         int mrecipeSlotStart = 1;
         int mrecipeSlotCount = 2;
         int minventorySlotStart = 3;
         int minventorySlotCount = 39;
-//TODO        registration.getRecipeTransferRegistry().addRecipeTransferHandler(ContainerMatter.class, MassFabricatorCategory.UID, mrecipeSlotStart, mrecipeSlotCount, minventorySlotStart, minventorySlotCount);
+
+        
+         * TODO MATTER Fabricator
+         * Transfer handler
+         * Show energy required for 1mb uu matter
+         * Show energy required to put uu matter into universal fluid cell
+         */
+//        registration.getRecipeTransferRegistry().addRecipeTransferHandler(ContainerMatter.class, MassFabricatorCategory.UID, mrecipeSlotStart, mrecipeSlotCount, minventorySlotStart, minventorySlotCount);
 
         int recipeSlotStart = 1;
         int recipeSlotCount = 2;
