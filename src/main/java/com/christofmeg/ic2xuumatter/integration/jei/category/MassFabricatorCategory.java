@@ -61,18 +61,25 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         return background;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, MatterFabricatorRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
         IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 
-        List<List<FluidStack>> fluidOutput = ingredients.getOutputs(FluidStack.class);
+        List<List<FluidStack>> fluidOutput = ingredients.getOutputs(VanillaTypes.FLUID);
+        List<List<FluidStack>> fluidInput = ingredients.getInputs(VanillaTypes.FLUID);
 
-        guiItemStacks.init(0, true, 52, 36); // scrap
         guiFluidStacks.init(0, false, 81, 23, 12, 47, 8000, false, tankOverlay); // uu matter
 
-        guiFluidStacks.set(0, fluidOutput.get(0));
+        if (recipeWrapper.scrapInput != null) {
+            guiItemStacks.init(0, true, 52, 36); // scrap
+            guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+        } else {
+            guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
+            guiItemStacks.init(0, true, 105, 19); // emptyCell
+            guiItemStacks.init(1, false, 105, 55); // filled Cell
+        }
+
         guiItemStacks.set(ingredients);
 
     }
@@ -89,10 +96,26 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             this.fluidOutput = fluidOutput;
         }
 
+        public FluidStack fluidInput;
+        public ItemStack emptyCellInput;
+        public ItemStack outputItem;
+
+        public MatterFabricatorRecipe(FluidStack fluidInput, ItemStack emptyCellInput, ItemStack filledCellOutput) {
+            this.fluidInput = fluidInput;
+            this.emptyCellInput = emptyCellInput;
+            this.outputItem = filledCellOutput;
+        }
+
         @Override
         public void getIngredients(IIngredients ingredients) {
-            ingredients.setInput(VanillaTypes.ITEM, scrapInput);
-            ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
+            if (scrapInput != null) {
+                ingredients.setInput(VanillaTypes.ITEM, scrapInput);
+                ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
+            } else {
+                ingredients.setInput(VanillaTypes.FLUID, fluidInput);
+                ingredients.setInput(VanillaTypes.ITEM, emptyCellInput);
+                ingredients.setOutput(VanillaTypes.ITEM, outputItem);
+            }
         }
 
         private String getAmplifier() {
@@ -106,16 +129,19 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             int tierFromConfig = ConfigUtil.getInt(MainConfig.get(), "balance/matterFabricatorTier");
             font.drawString(tier + Integer.toString(tierFromConfig), 0, 0, 4210752);
 
-            if (getAmplifier() != null) {
-                String amplifier = Localization.translate("ic2.Matter.gui.info.amplifier");
-                font.drawString(amplifier, 0, 46, 4210752);
-                if (getAmplifier() == "45,000") {
-                    font.drawString(I18n.format("+ " + getAmplifier()), 0, 58, 4210752);
-                }
-                if (getAmplifier() == "5,000") {
-                    font.drawString(I18n.format("+ " + getAmplifier()), 6, 58, 4210752);
+            if (scrapInput != null) {
+                if (getAmplifier() != null) {
+                    String amplifier = Localization.translate("ic2.Matter.gui.info.amplifier");
+                    font.drawString(amplifier, 0, 46, 4210752);
+                    if (getAmplifier() == "45,000") {
+                        font.drawString(I18n.format("+ " + getAmplifier()), 0, 58, 4210752);
+                    }
+                    if (getAmplifier() == "5,000") {
+                        font.drawString(I18n.format("+ " + getAmplifier()), 6, 58, 4210752);
+                    }
                 }
             }
+
         }
 
     }

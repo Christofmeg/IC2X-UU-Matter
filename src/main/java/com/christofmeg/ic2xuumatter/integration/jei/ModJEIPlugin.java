@@ -6,7 +6,6 @@ import java.util.Collections;
 import javax.annotation.Nonnull;
 
 import com.christofmeg.ic2xuumatter.integration.jei.category.MassFabricatorCategory;
-import com.christofmeg.ic2xuumatter.integration.jei.category.MassFabricatorSubCategory;
 import com.christofmeg.ic2xuumatter.integration.jei.category.ReplicatorCategory;
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
@@ -37,8 +36,6 @@ public class ModJEIPlugin implements IModPlugin {
     public void register(@Nonnull IModRegistry registration) {
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.matter_generator), MassFabricatorCategory.UID);
-        registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.matter_generator),
-                MassFabricatorSubCategory.UID);
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.replicator), ReplicatorCategory.UID);
 
@@ -48,12 +45,12 @@ public class ModJEIPlugin implements IModPlugin {
                         new FluidStack(FluidName.uu_matter.getInstance(), 1), "5,000"),
                 new MassFabricatorCategory.MatterFabricatorRecipe(
                         new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap_box).getItem(), 4, 24),
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1), "45,000")),
+                        new FluidStack(FluidName.uu_matter.getInstance(), 1), "45,000"),
+                new MassFabricatorCategory.MatterFabricatorRecipe(
+                        new FluidStack(FluidName.uu_matter.getInstance(), 1000),
+                        ItemName.cell.getItemStack(CellType.empty),
+                        Utils.getCellFromFluid(FluidName.uu_matter.getName()))),
                 MassFabricatorCategory.UID);
-
-        registration.addRecipes(Arrays.asList(new MassFabricatorSubCategory.MatterFabricatorRecipe(
-                new FluidStack(FluidName.uu_matter.getInstance(), 1000), ItemName.cell.getItemStack(CellType.empty),
-                Utils.getCellFromFluid(FluidName.uu_matter.getName()))), MassFabricatorSubCategory.UID);
 
         registration
                 .addRecipes(
@@ -86,8 +83,7 @@ public class ModJEIPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         IGuiHelper helper = registration.getJeiHelpers().getGuiHelper();
 
-        registration.addRecipeCategories(new MassFabricatorCategory(helper), new MassFabricatorSubCategory(helper),
-                new ReplicatorCategory(helper));
+        registration.addRecipeCategories(new MassFabricatorCategory(helper), new ReplicatorCategory(helper));
     }
 
 }
