@@ -6,4 +6,4 @@ https://cf.way2muchnoise.eu/versions/For%20MC_827219_all.svg
 <img src="https://modrinth-utils.vercel.app/api/badge/versions?id=FOVCOVzb&logo=true">
 -->
  
- Addon for IC2-Classic adding JEI pages for UU-Matter and Plasma Cell creation
+ Addon for IC2-Experimental adding JEI pages for UU-Matter creation
