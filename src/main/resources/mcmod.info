@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ic2xuumatter",
+  "name": "IC2X UU-Matter",
+  "description": "Addon for IC2-Experimental adding JEI pages for UU-Matter and Plasma Cell creation.",
+  "version": "1.0.0",
+  "mcversion": "1.12.2",
+  "url": "https://github.com/Christofmeg/IC2X-UU-Matter",
+  "updateUrl": "",
+  "authorList": ["Christofmeg"],
+  "credits": "",
+  "logoFile": "pack.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
