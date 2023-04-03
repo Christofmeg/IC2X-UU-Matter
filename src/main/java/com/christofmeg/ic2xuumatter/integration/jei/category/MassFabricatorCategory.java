@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.ref.BlockName;
+import ic2.core.ref.FluidName;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.ConfigUtil;
 import mezz.jei.api.IGuiHelper;
@@ -30,6 +31,7 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
 
     public static String UID = "ic2xuumatter.matter_fabricator";
 
+    private final IDrawable icon;
     private final IDrawable background;
     protected IDrawableStatic tankOverlay;
 
@@ -39,6 +41,9 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
     public MassFabricatorCategory(IGuiHelper helper) {
         background = helper.createDrawable(matterFabricatorTexture, 19, 3, 151, 77);
         tankOverlay = helper.createDrawable(matterFabricatorTexture, 48 + 64 * 2, 193, 16, 60);
+        // icon = helper.createDrawableIngredient(new
+        // FluidStack(FluidName.uu_matter.getInstance(), 1000));
+        icon = helper.createDrawableIngredient(new FluidStack(FluidName.uu_matter.getInstance(), 10000));
     }
 
     @Override
@@ -61,18 +66,24 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         return background;
     }
 
+    @Nullable
+    @Override
+    public IDrawable getIcon() {
+        return icon;
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, MatterFabricatorRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
         IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 
-        List<List<FluidStack>> outputs = ingredients.getOutputs(FluidStack.class);
+        List<List<FluidStack>> fluidOutput = ingredients.getOutputs(FluidStack.class);
 
         guiItemStacks.init(0, true, 52, 36); // scrap
         guiFluidStacks.init(0, false, 81, 23, 12, 47, 8000, false, tankOverlay); // uu matter
 
-        guiFluidStacks.set(0, outputs.get(0));
+        guiFluidStacks.set(0, fluidOutput.get(0));
         guiItemStacks.set(ingredients);
 
     }

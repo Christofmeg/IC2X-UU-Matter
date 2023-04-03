@@ -1,10 +1,10 @@
 package com.christofmeg.ic2xuumatter.integration.jei.category;
 
-import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.init.MainConfig;
 import ic2.core.ref.BlockName;
@@ -13,7 +13,6 @@ import ic2.core.ref.TeBlock;
 import ic2.core.util.ConfigUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -33,31 +32,17 @@ public class MassFabricatorSubCategory implements IRecipeCategory<MassFabricator
 
     public static String UID = "ic2xuumatter.matter_fabricator_sub";
 
+    private final IDrawable icon;
     private final IDrawable background;
-    private final IDrawable tankGlass;
-    private final IDrawable uuMatterFluid;
-
     protected IDrawableStatic tankOverlay;
 
     public static final ResourceLocation matterFabricatorTexture = new ResourceLocation("ic2",
             "textures/gui/guimatter.png");
 
-    private static final ResourceLocation uuMatterFluidTexture = new ResourceLocation("ic2",
-            "textures/blocks/fluid/uu_matter_still.png");
-
-    int xPos = 19;
-    int yPos = 3;
-
     public MassFabricatorSubCategory(IGuiHelper helper) {
-        background = helper.createDrawable(matterFabricatorTexture, xPos, yPos, 151, 77);
-
-        tankGlass = helper.createDrawable(matterFabricatorTexture, 179, 60, 10, 37);
-
-        uuMatterFluid = helper.drawableBuilder(uuMatterFluidTexture, 4, 4, 12, 47).buildAnimated(200,
-                StartDirection.TOP, true);
-
+        background = helper.createDrawable(matterFabricatorTexture, 19, 3, 151, 77);
         tankOverlay = helper.createDrawable(matterFabricatorTexture, 48 + 64 * 2, 193, 16, 60);
-
+        icon = helper.createDrawableIngredient(Utils.getCellFromFluid(FluidName.uu_matter.getName()));
     }
 
     @Override
@@ -80,56 +65,35 @@ public class MassFabricatorSubCategory implements IRecipeCategory<MassFabricator
         return background;
     }
 
+    @Nullable
+    @Override
+    public IDrawable getIcon() {
+        return icon;
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, MatterFabricatorRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-        guiItemStacks.init(0, true, 72 - xPos - 1, 40 - yPos - 1);
-        guiItemStacks.init(1, false, 125 - xPos - 1, 59 - yPos - 1);
-        guiItemStacks.init(2, true, 125 - xPos - 1, 23 - yPos - 1);
-
         IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 
+        List<List<FluidStack>> fluidInput = ingredients.getInputs(FluidStack.class);
+
+        guiItemStacks.init(0, true, 105, 19); // emptyCell
+        guiItemStacks.init(1, false, 105, 55); // filled Cell
+
+        guiFluidStacks.init(0, true, 81, 23, 12, 47, 8000, false, tankOverlay); // uu matter
+
+        guiFluidStacks.set(0, fluidInput.get(0));
         guiItemStacks.set(ingredients);
-
-        List<List<FluidStack>> outputs = ingredients.getOutputs(FluidStack.class);
-        if (!outputs.isEmpty()) {
-            guiFluidStacks.init(3, false, 106, 1, 16, 60, 8000, false, tankOverlay);
-            guiFluidStacks.set(3, outputs.get(3));
-        }
-
-    }
-
-    @Override
-    public void drawExtras(@Nonnull Minecraft minecraft) {
-
-        uuMatterFluid.draw(minecraft, 81, 23);
-        tankGlass.draw(minecraft, 84, 28);
 
     }
 
     public static final class MatterFabricatorRecipe implements IRecipeWrapper {
 
-        public String energy;
-        public ItemStack scrapInput;
+        public FluidStack fluidInput;
         public ItemStack emptyCellInput;
         public ItemStack outputItem;
-        public FluidName uuMatter;
-        public FluidStack fluidInput;
-
-        public MatterFabricatorRecipe(ItemStack scrapInput, ItemStack emptyCellInput, ItemStack filledCellOutput,
-                @Nullable String energyRequired) {
-            this.energy = energyRequired;
-            this.scrapInput = scrapInput;
-            this.emptyCellInput = emptyCellInput;
-            this.outputItem = filledCellOutput;
-        }
-
-        public MatterFabricatorRecipe(FluidName uuMatter, ItemStack emptyCellInput, ItemStack filledCellOutput) {
-            this.uuMatter = uuMatter;
-            this.emptyCellInput = emptyCellInput;
-            this.outputItem = filledCellOutput;
-        }
 
         public MatterFabricatorRecipe(FluidStack fluidInput, ItemStack emptyCellInput, ItemStack filledCellOutput) {
             this.fluidInput = fluidInput;
@@ -137,13 +101,10 @@ public class MassFabricatorSubCategory implements IRecipeCategory<MassFabricator
             this.outputItem = filledCellOutput;
         }
 
-        public String getEnergy() {
-            return energy;
-        }
-
         @Override
         public void getIngredients(IIngredients ingredients) {
-            ingredients.setInputs(VanillaTypes.ITEM, Arrays.asList(new ItemStack[] { scrapInput, emptyCellInput }));
+            ingredients.setInput(VanillaTypes.FLUID, fluidInput);
+            ingredients.setInput(VanillaTypes.ITEM, emptyCellInput);
             ingredients.setOutput(VanillaTypes.ITEM, outputItem);
         }
 
