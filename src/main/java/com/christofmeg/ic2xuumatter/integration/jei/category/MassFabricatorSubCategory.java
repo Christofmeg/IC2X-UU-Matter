@@ -42,7 +42,7 @@ public class MassFabricatorSubCategory implements IRecipeCategory<MassFabricator
     public static final ResourceLocation matterFabricatorTexture = new ResourceLocation("ic2",
             "textures/gui/guimatter.png");
 
-    private static final ResourceLocation uuMatterFluidTexture = new ResourceLocation("ic2xuumatter",
+    private static final ResourceLocation uuMatterFluidTexture = new ResourceLocation("ic2",
             "textures/blocks/fluid/uu_matter_still.png");
 
     int xPos = 19;

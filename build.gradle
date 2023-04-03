@@ -9,7 +9,7 @@
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.12.2-1.1.1"
+version = "1.12.2-1.0.0"
 group = "com.christofmeg.ic2xuumatter"
 archivesBaseName = "ic2xuumatter"
 
