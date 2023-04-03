@@ -79,12 +79,12 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
 
     public static final class MatterFabricatorRecipe implements IRecipeWrapper {
 
-        public String amplifier;
+        public String amplifierValue;
         public ItemStack scrapInput;
         public FluidStack fluidOutput;
 
-        public MatterFabricatorRecipe(ItemStack scrapInput, FluidStack fluidOutput, @Nullable String amplifier) {
-            this.amplifier = amplifier;
+        public MatterFabricatorRecipe(ItemStack scrapInput, FluidStack fluidOutput, @Nullable String amplifierValue) {
+            this.amplifierValue = amplifierValue;
             this.scrapInput = scrapInput;
             this.fluidOutput = fluidOutput;
         }
@@ -95,6 +95,10 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
         }
 
+        private String getAmplifier() {
+            return amplifierValue;
+        }
+
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
             FontRenderer font = minecraft.fontRenderer;
@@ -102,14 +106,14 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             int tierFromConfig = ConfigUtil.getInt(MainConfig.get(), "balance/matterFabricatorTier");
             font.drawString(tier + Integer.toString(tierFromConfig), 0, 0, 4210752);
 
-            if (amplifier != null) {
+            if (getAmplifier() != null) {
                 String amplifier = Localization.translate("ic2.Matter.gui.info.amplifier");
                 font.drawString(amplifier, 0, 46, 4210752);
-                if (amplifier == "45,000") {
-                    font.drawString(I18n.format("+ " + amplifier), 0, 58, 4210752);
+                if (getAmplifier() == "45,000") {
+                    font.drawString(I18n.format("+ " + getAmplifier()), 0, 58, 4210752);
                 }
-                if (amplifier == "5,000") {
-                    font.drawString(I18n.format("+ " + amplifier), 6, 58, 4210752);
+                if (getAmplifier() == "5,000") {
+                    font.drawString(I18n.format("+ " + getAmplifier()), 6, 58, 4210752);
                 }
             }
         }

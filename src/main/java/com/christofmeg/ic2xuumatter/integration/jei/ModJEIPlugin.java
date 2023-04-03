@@ -51,14 +51,9 @@ public class ModJEIPlugin implements IModPlugin {
                         new FluidStack(FluidName.uu_matter.getInstance(), 1), "45,000")),
                 MassFabricatorCategory.UID);
 
-        registration.addRecipes(Arrays.asList(
-
-                new MassFabricatorSubCategory.MatterFabricatorRecipe(
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1000),
-                        ItemName.cell.getItemStack(CellType.empty),
-                        Utils.getCellFromFluid(FluidName.uu_matter.getName()))
-
-        ), MassFabricatorSubCategory.UID);
+        registration.addRecipes(Arrays.asList(new MassFabricatorSubCategory.MatterFabricatorRecipe(
+                new FluidStack(FluidName.uu_matter.getInstance(), 1000), ItemName.cell.getItemStack(CellType.empty),
+                Utils.getCellFromFluid(FluidName.uu_matter.getName()))), MassFabricatorSubCategory.UID);
 
         registration
                 .addRecipes(
