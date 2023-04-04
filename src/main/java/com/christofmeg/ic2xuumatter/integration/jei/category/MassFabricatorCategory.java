@@ -69,14 +69,14 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         List<List<FluidStack>> fluidOutput = ingredients.getOutputs(VanillaTypes.FLUID);
         List<List<FluidStack>> fluidInput = ingredients.getInputs(VanillaTypes.FLUID);
 
-        guiFluidStacks.init(0, false, 81, 23, 12, 47, 8000, false, tankOverlay); // uu matter
+        guiFluidStacks.init(0, false, 81, 23, 12, 47, 8000, true, tankOverlay); // uu matter
 
         if (recipeWrapper.scrapInput != null) {
             guiItemStacks.init(0, true, 52, 36); // scrap
             guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
-        } else if (recipeWrapper.fluidOutput != null) {
-            // guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
-        } else if (recipeWrapper.scrapInput == null && recipeWrapper.fluidOutput == null) {
+        } else if (recipeWrapper.emptyCellInput == null) {
+            guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+        } else {
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
             guiItemStacks.init(0, true, 105, 19); // emptyCell
             guiItemStacks.init(1, false, 105, 55); // filled Cell
@@ -111,7 +111,7 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
 
         @Override
         public void getIngredients(IIngredients ingredients) {
-            if (scrapInput != null) {
+            if (emptyCellInput == null) {
                 ingredients.setInput(VanillaTypes.ITEM, scrapInput);
                 ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
             } else {
@@ -143,8 +143,11 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
                     if (getAmplifier() == "5,000") {
                         font.drawString(I18n.format("+ " + getAmplifier()), 6, 48, 4210752);
                     }
-                    font.drawString("166,666 EU", 8, 70, 4210752);
+                    font.drawString("166,666 EU", 0, 70, 4210752);
                 }
+
+            } else if (outputItem != null) {
+                font.drawString("32 EU", 0, 70, 4210752);
 
             } else if (fluidOutput != null) {
                 font.drawString("1,000,000 EU", 0, 70, 4210752);

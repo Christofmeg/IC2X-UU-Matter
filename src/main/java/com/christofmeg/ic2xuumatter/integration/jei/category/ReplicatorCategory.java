@@ -1,12 +1,13 @@
 package com.christofmeg.ic2xuumatter.integration.jei.category;
 
-import java.util.Arrays;
+import java.util.List;
 
 import ic2.core.ref.BlockName;
 import ic2.core.ref.TeBlock;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
+import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
@@ -18,35 +19,21 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 
 public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.ReplicatorRecipe> {
 
     public static String UID = "ic2xuumatter.replicator";
-    public static final ResourceLocation plasmafierTexture = new ResourceLocation("ic2xuumatter",
-            "textures/gui/plasmafier.png");
+
     IDrawable background;
-    IDrawable press1;
-    IDrawable press2;
-    IDrawable press3;
-    IDrawable tank1;
-    IDrawable tank2;
-    IDrawable tank3;
-    IDrawable plasma;
-    IDrawable glass;
+    protected IDrawableStatic tankOverlay;
 
     public static final ResourceLocation replicatorTexture = new ResourceLocation("ic2",
             "textures/gui/guireplicator.png");
 
     public ReplicatorCategory(IGuiHelper helper) {
-        background = helper.createDrawable(replicatorTexture, 13, 14, 132, 64);
-        press1 = helper.createDrawable(replicatorTexture, 176, 41, 12, 1);
-        press2 = helper.createDrawable(replicatorTexture, 176, 42, 12, 1);
-        press3 = helper.createDrawable(replicatorTexture, 176, 45, 12, 1);
-        tank1 = helper.drawableBuilder(plasmafierTexture, 201, 0, 12, 41).buildAnimated(250, StartDirection.TOP, true);
-        tank2 = helper.drawableBuilder(plasmafierTexture, 213, 0, 12, 41).buildAnimated(250, StartDirection.TOP, true);
-        tank3 = helper.drawableBuilder(plasmafierTexture, 225, 0, 12, 41).buildAnimated(250, StartDirection.TOP, true);
-        plasma = helper.drawableBuilder(replicatorTexture, 176, 0, 12, 41).buildAnimated(250, StartDirection.TOP, true);
-        glass = helper.createDrawable(replicatorTexture, 189, 0, 12, 46);
+        background = helper.createDrawable(replicatorTexture, 7, 6, 163, 93);
+        tankOverlay = helper.createDrawable(replicatorTexture, 31, 34, 16, 60);
     }
 
     @Override
@@ -69,55 +56,54 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         return background;
     }
 
+    /*
+     * TODO Cystal disk ItemSubtypes for every possible Scanner result
+     *
+     * JEI page Scanner JEI page Pattern Storage JEI page Pattern Storage +
+     * Replicator
+     */
+
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, ReplicatorRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-        guiItemStacks.init(0, true, 102, 8); // empty cell
-        guiItemStacks.init(1, true, 30, 20); // uu matter
-        guiItemStacks.init(2, false, 102, 30); // plasma cell
+        IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+
+        List<List<FluidStack>> fluidOutput = ingredients.getOutputs(VanillaTypes.FLUID);
+        List<List<FluidStack>> fluidInput = ingredients.getInputs(VanillaTypes.FLUID);
+
+        guiFluidStacks.init(0, false, 24, 28, 12, 47, 8000, true, tankOverlay); // uu matter
+
+        guiItemStacks.init(0, true, 0, 65); // filled cell
+        guiItemStacks.init(1, false, 0, 20); // empty cell
+        guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+
         guiItemStacks.set(ingredients);
-    }
-
-    @Override
-    public void drawExtras(Minecraft minecraft) {
-
-        press1.draw(minecraft, 69, 45);
-        press2.draw(minecraft, 69, 46);
-        press2.draw(minecraft, 69, 47);
-        press2.draw(minecraft, 69, 48);
-        press3.draw(minecraft, 69, 49);
-        tank1.draw(minecraft, 69, 4);
-        tank2.draw(minecraft, 69, 5);
-        tank3.draw(minecraft, 69, 8);
-        plasma.draw(minecraft, 69, 9);
-        glass.draw(minecraft, 68, 4);
-
-        FontRenderer font = minecraft.fontRenderer;
-        String tierHV = I18n.format("translation.ic2xuumatter.tier.4");
-        font.drawString(tierHV, 0, 0, 4210752);
-
-//        String ticks = I18n.format("translation.ic2xuumatter.ticks");
-//        font.drawString(ticks, 0, 57, 4210752);
-//        font.drawString(new String("512 EU/t"), 89, 57, 4210752);
-
     }
 
     public static final class ReplicatorRecipe implements IRecipeWrapper {
 
-        public ItemStack inputEmptyCell;
-        public ItemStack inputUU;
-        public ItemStack outputItem;
+        public ItemStack filledCellInput;
+        public ItemStack emptyCellOutput;
+        public FluidStack fluidOutput;
 
-        public ReplicatorRecipe(ItemStack emptyCellInput, ItemStack uuInput, ItemStack itemOutput) {
-            this.inputEmptyCell = emptyCellInput;
-            this.inputUU = uuInput;
-            this.outputItem = itemOutput;
+        public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
+            this.filledCellInput = filledCellInput;
+            this.emptyCellOutput = emptyCellOutput;
+            this.fluidOutput = fluidOutput;
         }
 
         @Override
         public void getIngredients(IIngredients ingredients) {
-            ingredients.setInputs(VanillaTypes.ITEM, Arrays.asList(new ItemStack[] { inputEmptyCell, inputUU }));
-            ingredients.setOutput(VanillaTypes.ITEM, outputItem);
+            ingredients.setInput(VanillaTypes.ITEM, filledCellInput);
+            ingredients.setOutput(VanillaTypes.ITEM, emptyCellOutput);
+            ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
+        }
+
+        @Override
+        public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+            FontRenderer font = minecraft.fontRenderer;
+            String tierHV = I18n.format("translation.ic2xuumatter.tier.4");
+            font.drawString(tierHV, 0, 0, 4210752);
         }
     }
 
