@@ -40,6 +40,8 @@ public class ModJEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.replicator), ReplicatorCategory.UID);
 
         registration.addRecipes(Arrays.asList(
+                new MassFabricatorCategory.MatterFabricatorRecipe(null,
+                        new FluidStack(FluidName.uu_matter.getInstance(), 1), null),
                 new MassFabricatorCategory.MatterFabricatorRecipe(
                         new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap).getItem(), 34, 23),
                         new FluidStack(FluidName.uu_matter.getInstance(), 1), "5,000"),
@@ -64,16 +66,12 @@ public class ModJEIPlugin implements IModPlugin {
 
         registration.addRecipeClickArea(GuiReplicator.class, 78, 14, 20, 54, ReplicatorCategory.UID);
         /**
-        int mrecipeSlotStart = 1;
-        int mrecipeSlotCount = 2;
-        int minventorySlotStart = 3;
-        int minventorySlotCount = 39;
-
-        
-         * TODO MATTER Fabricator
-         * Transfer handler
-         * Show energy required for 1mb uu matter
-         * Show energy required to put uu matter into universal fluid cell
+         * int mrecipeSlotStart = 1; int mrecipeSlotCount = 2; int minventorySlotStart =
+         * 3; int minventorySlotCount = 39;
+         *
+         *
+         * TODO MATTER Fabricator Transfer handler Show energy required for 1mb uu
+         * matter Show energy required to put uu matter into universal fluid cell
          */
 //        registration.getRecipeTransferRegistry().addRecipeTransferHandler(ContainerMatter.class, MassFabricatorCategory.UID, mrecipeSlotStart, mrecipeSlotCount, minventorySlotStart, minventorySlotCount);
 

@@ -74,7 +74,9 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         if (recipeWrapper.scrapInput != null) {
             guiItemStacks.init(0, true, 52, 36); // scrap
             guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
-        } else {
+        } else if (recipeWrapper.fluidOutput != null) {
+            // guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+        } else if (recipeWrapper.scrapInput == null && recipeWrapper.fluidOutput == null) {
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
             guiItemStacks.init(0, true, 105, 19); // emptyCell
             guiItemStacks.init(1, false, 105, 55); // filled Cell
@@ -90,7 +92,8 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         public ItemStack scrapInput;
         public FluidStack fluidOutput;
 
-        public MatterFabricatorRecipe(ItemStack scrapInput, FluidStack fluidOutput, @Nullable String amplifierValue) {
+        public MatterFabricatorRecipe(@Nullable ItemStack scrapInput, FluidStack fluidOutput,
+                @Nullable String amplifierValue) {
             this.amplifierValue = amplifierValue;
             this.scrapInput = scrapInput;
             this.fluidOutput = fluidOutput;
@@ -128,18 +131,23 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             String tier = I18n.format("translation.ic2xuumatter.tier");
             int tierFromConfig = ConfigUtil.getInt(MainConfig.get(), "balance/matterFabricatorTier");
             font.drawString(tier + Integer.toString(tierFromConfig), 0, 0, 4210752);
+            font.drawString("512 EU/t", 0, 12, 4210752);
 
             if (scrapInput != null) {
                 if (getAmplifier() != null) {
                     String amplifier = Localization.translate("ic2.Matter.gui.info.amplifier");
-                    font.drawString(amplifier, 0, 46, 4210752);
+                    font.drawString(amplifier, 0, 36, 4210752);
                     if (getAmplifier() == "45,000") {
-                        font.drawString(I18n.format("+ " + getAmplifier()), 0, 58, 4210752);
+                        font.drawString(I18n.format("+ " + getAmplifier()), 0, 48, 4210752);
                     }
                     if (getAmplifier() == "5,000") {
-                        font.drawString(I18n.format("+ " + getAmplifier()), 6, 58, 4210752);
+                        font.drawString(I18n.format("+ " + getAmplifier()), 6, 48, 4210752);
                     }
+                    font.drawString("166,666 EU", 8, 70, 4210752);
                 }
+
+            } else if (fluidOutput != null) {
+                font.drawString("1,000,000 EU", 0, 70, 4210752);
             }
 
         }
