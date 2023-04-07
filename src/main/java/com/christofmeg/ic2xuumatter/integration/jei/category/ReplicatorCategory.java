@@ -3,6 +3,7 @@ package com.christofmeg.ic2xuumatter.integration.jei.category;
 import java.util.List;
 
 import ic2.core.ref.BlockName;
+import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -50,6 +51,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
     IDrawableBuilder patternGuiRecipeBackground5;
     IDrawableBuilder patternGuiRecipeBackground6;
 
+    IDrawable ingredient;
+
     public static final ResourceLocation replicatorTexture = new ResourceLocation("ic2",
             "textures/gui/guireplicator.png");
     public static final ResourceLocation patternStorageTexture = new ResourceLocation("ic2",
@@ -62,6 +65,9 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
     public ReplicatorCategory(IGuiHelper helper) {
         background = helper.createDrawable(replicatorTexture, 7, 7, 162, 93);
+
+        ingredient = helper.createDrawableIngredient(new ItemStack(ItemName.crystal_memory.getInstance()));
+
         energy = helper.drawableBuilder(replicatorTexture, 176, 0, 14, 15).buildAnimated(300, StartDirection.TOP, true);
         tankOverlay = helper.createDrawable(replicatorTexture, 48 + 64 * 2, 193, 16, 60);
         patternStorage = helper.drawableBuilder(patternStorageTexture, 7, 19, 162, 62);
@@ -120,6 +126,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
     @Override
     public void drawExtras(Minecraft minecraft) {
         energy.draw(minecraft, 126, 76);
+
         /*
          * patternGuiBackground1.build().draw(minecraft, -194, 35);
          * patternGuiBackground2.build().draw(minecraft, -194, -9);
