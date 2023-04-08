@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
 
-import ic2.core.init.Localization;
+import ic2.core.item.ItemBattery;
 import ic2.core.ref.BlockName;
 import ic2.core.ref.TeBlock;
-import ic2.core.util.StackUtil;
-import ic2.core.util.Util;
-import ic2.core.uu.UuIndex;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -27,9 +24,11 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.ReplicatorRecipe> {
 
@@ -96,8 +95,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         return background;
     }
 
-    // TODO Cystal disk ItemSubtypes for every possible Scanner result
-
     @Override
     public void drawExtras(Minecraft minecraft) {
 
@@ -109,7 +106,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageArrows.build().draw(minecraft, 1, 97);
         patternStorageSlot.build().draw(minecraft, 10, 95);
         patternStorageSlot.build().draw(minecraft, 144, 104);
-
     }
 
     @Override
@@ -125,16 +121,33 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             guiItemStacks.init(0, false, 0, 64); // empty cell
             guiItemStacks.init(1, true, 0, 19); // filled cell
             guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+
+            guiItemStacks.init(2, true, 144, 75); // batteries
+            guiItemStacks.set(2, this.getValidBatteryList()); // batteries
         } else {
             guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
             guiItemStacks.init(0, false, 83, 51); // replicationOutput
             guiItemStacks.init(1, false, 83, 9); // replicationIngredient
             guiItemStacks.init(2, false, 144, 104); // patternStorageIngredient
-            guiItemStacks.init(3, false, 10, 95); // crystalMemory
+            guiItemStacks.init(3, true, 10, 95); // crystalMemory
+
+            guiItemStacks.init(4, true, 144, 75); // batteries
+            guiItemStacks.set(4, this.getValidBatteryList()); // batteries
         }
 
         guiItemStacks.set(ingredients);
+    }
+
+    private List<ItemStack> getValidBatteryList() {
+        List<ItemStack> validBatteryList = new ArrayList<>();
+        List<Item> list2 = ImmutableList.copyOf(ForgeRegistries.ITEMS);
+
+        list2.stream().filter(item -> (item instanceof ItemBattery)).forEach(item -> {
+            validBatteryList.add(item.getDefaultInstance());
+        });
+
+        return validBatteryList;
     }
 
     public static final class ReplicatorRecipe implements IRecipeWrapper {
@@ -166,10 +179,10 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
                 ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
             } else {
                 ingredients.setInput(VanillaTypes.FLUID, fluidInput);
-                ingredients.setOutputs(VanillaTypes.ITEM, Arrays.asList(
-                        new ItemStack[] { replicationOutput, replicationOutput, replicationOutput, crystalMemory }));
+                ingredients.setOutputs(VanillaTypes.ITEM,
+                        Arrays.asList(new ItemStack[] { replicationOutput, replicationOutput, replicationOutput, }));
+                ingredients.setInput(VanillaTypes.ITEM, crystalMemory);
             }
-
         }
 
         @Override
@@ -180,25 +193,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
             String patternStorage = BlockName.te.getItemStack(TeBlock.pattern_storage).getDisplayName();
             font.drawString(patternStorage, 54, 108, 4210752);
-
-        }
-
-        @Override
-        @Nullable
-        public List<String> getTooltipStrings(int mouseX, int mouseY) {
-
-            List<String> tooltip = new ArrayList<>();
-
-            if (mouseX > 9 && mouseY > 94 && mouseX < 27 && mouseY < 110) {
-                // tooltip.clear();
-                if (!StackUtil.isEmpty(replicationOutput)) {
-                    tooltip.add(Localization.translate("ic2.item.CrystalMemory.tooltip.Item") + " "
-                            + replicationOutput.getDisplayName());
-                    tooltip.add(Localization.translate("ic2.item.CrystalMemory.tooltip.UU-Matter") + " "
-                            + Util.toSiString(UuIndex.instance.getInBuckets(replicationOutput), 4) + "B");
-                }
-            }
-            return tooltip;
         }
     }
 
