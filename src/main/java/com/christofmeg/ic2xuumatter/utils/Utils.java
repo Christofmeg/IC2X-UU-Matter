@@ -1,10 +1,17 @@
 package com.christofmeg.ic2xuumatter.utils;
 
+import ic2.core.item.ItemCrystalMemory;
 import ic2.core.ref.ItemName;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class Utils {
+
+    public static ItemStack getCrystalMemory(ItemStack stack) {
+        final ItemStack crystalMemory = ItemName.crystal_memory.getItemStack();
+        ((ItemCrystalMemory) crystalMemory.getItem()).writecontentsTag(crystalMemory, stack);
+        return crystalMemory;
+    }
 
     /**
      * https://github.com/ZelGimi/industrialupgrade/blob/5dbe976428ef0a6c0f7b9eefa9eaea80ea9d4880/src/main/java/com/denfop/utils/ModUtils.java#L65-L73

@@ -1,9 +1,17 @@
 package com.christofmeg.ic2xuumatter.integration.jei.category;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import ic2.core.init.Localization;
 import ic2.core.ref.BlockName;
 import ic2.core.ref.TeBlock;
+import ic2.core.util.StackUtil;
+import ic2.core.util.Util;
+import ic2.core.uu.UuIndex;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -42,6 +50,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
     public static final ResourceLocation replicatorTexture = new ResourceLocation("ic2",
             "textures/gui/guireplicator.png");
+    public static final ResourceLocation commonTexture = new ResourceLocation("ic2", "textures/gui/common.png");
     public static final ResourceLocation patternStorageTexture = new ResourceLocation("ic2",
             "textures/gui/guipatternstorage.png");
     public static final ResourceLocation jeiGuiBackground = new ResourceLocation("jei",
@@ -57,15 +66,13 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
         replicator = helper.createDrawable(replicatorTexture, 7, 7, 162, 93);
 
-        energy = helper.drawableBuilder(replicatorTexture, 176, 0, 14, 15).buildAnimated(300, StartDirection.TOP, true);
+        energy = helper.drawableBuilder(commonTexture, 113, 64, 14, 15).buildAnimated(300, StartDirection.TOP, true);
         tankOverlay = helper.createDrawable(replicatorTexture, 48 + 64 * 2, 193, 16, 60);
         patternStorage = helper.drawableBuilder(patternStorageTexture, 7, 19, 162, 62);
 
         patternStorageInfobox = helper.drawableBuilder(patternStorageTexture, 7, 45, 162, 36);
         patternStorageArrows = helper.drawableBuilder(modGuiArrows, 0, 0, 36, 25).setTextureSize(36, 25);
         patternStorageSlot = helper.drawableBuilder(patternStorageTexture, 151, 28, 18, 18);
-
-//        ingredient = helper.createDrawableIngredient(ReplicatorCategory.ReplicatorRecipe.getReplicationOutput());
 
     }
 
@@ -89,12 +96,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         return background;
     }
 
-    /*
-     * TODO Cystal disk ItemSubtypes for every possible Scanner result
-     *
-     * JEI page Scanner JEI page Pattern Storage JEI page Pattern Storage +
-     * Replicator
-     */
+    // TODO Cystal disk ItemSubtypes for every possible Scanner result
 
     @Override
     public void drawExtras(Minecraft minecraft) {
@@ -107,8 +109,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageArrows.build().draw(minecraft, 1, 97);
         patternStorageSlot.build().draw(minecraft, 10, 95);
         patternStorageSlot.build().draw(minecraft, 144, 104);
-
-//        ingredient.draw(minecraft, 83, 9);
 
     }
 
@@ -129,6 +129,9 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
             guiItemStacks.init(0, false, 83, 51); // replicationOutput
+            guiItemStacks.init(1, false, 83, 9); // replicationIngredient
+            guiItemStacks.init(2, false, 144, 104); // patternStorageIngredient
+            guiItemStacks.init(3, false, 10, 95); // crystalMemory
         }
 
         guiItemStacks.set(ingredients);
@@ -141,6 +144,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         public FluidStack fluidOutput;
         public FluidStack fluidInput;
         public ItemStack replicationOutput;
+        public ItemStack crystalMemory;
 
         public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
             this.filledCellInput = filledCellInput;
@@ -148,9 +152,10 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             this.fluidOutput = fluidOutput;
         }
 
-        public ReplicatorRecipe(FluidStack fluidInput, ItemStack replicationOutput) {
+        public ReplicatorRecipe(FluidStack fluidInput, ItemStack replicationOutput, ItemStack crystalMemory) {
             this.fluidInput = fluidInput;
             this.replicationOutput = replicationOutput;
+            this.crystalMemory = crystalMemory;
         }
 
         @Override
@@ -161,7 +166,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
                 ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
             } else {
                 ingredients.setInput(VanillaTypes.FLUID, fluidInput);
-                ingredients.setOutput(VanillaTypes.ITEM, replicationOutput);
+                ingredients.setOutputs(VanillaTypes.ITEM, Arrays.asList(
+                        new ItemStack[] { replicationOutput, replicationOutput, replicationOutput, crystalMemory }));
             }
 
         }
@@ -175,6 +181,24 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             String patternStorage = BlockName.te.getItemStack(TeBlock.pattern_storage).getDisplayName();
             font.drawString(patternStorage, 54, 108, 4210752);
 
+        }
+
+        @Override
+        @Nullable
+        public List<String> getTooltipStrings(int mouseX, int mouseY) {
+
+            List<String> tooltip = new ArrayList<>();
+
+            if (mouseX > 9 && mouseY > 94 && mouseX < 27 && mouseY < 110) {
+                // tooltip.clear();
+                if (!StackUtil.isEmpty(replicationOutput)) {
+                    tooltip.add(Localization.translate("ic2.item.CrystalMemory.tooltip.Item") + " "
+                            + replicationOutput.getDisplayName());
+                    tooltip.add(Localization.translate("ic2.item.CrystalMemory.tooltip.UU-Matter") + " "
+                            + Util.toSiString(UuIndex.instance.getInBuckets(replicationOutput), 4) + "B");
+                }
+            }
+            return tooltip;
         }
     }
 

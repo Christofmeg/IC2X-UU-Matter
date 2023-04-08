@@ -25,13 +25,13 @@ import ic2.core.uu.UuGraph;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -72,14 +72,12 @@ public class ModJEIPlugin implements IModPlugin {
             pattern = UuGraph.find(stack);
             if (!StackUtil.isEmpty(pattern)) {
                 if (stack != null && stack.getItem() != null) {
-                    if (item.getValue().toString() != "Infinity") {
-                        int mb = Math.round(item.getValue().intValue());
-                        registration.addRecipes(
-                                Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
-                                        new FluidStack(FluidName.uu_matter.getInstance(), mb), item.getKey())),
-                                ReplicatorCategory.UID);
+                    if (item.getValue() != Double.POSITIVE_INFINITY) {
+                        int mb = MathHelper.roundUp((int) Math.round(item.getValue() / 100), 1);
+                        registration.addRecipes(Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
+                                new FluidStack(FluidName.uu_matter.getInstance(), mb), item.getKey(),
+                                Utils.getCrystalMemory(item.getKey()))), ReplicatorCategory.UID);
                     }
-
                 }
             }
         });
@@ -112,12 +110,6 @@ public class ModJEIPlugin implements IModPlugin {
         IGuiHelper helper = registration.getJeiHelpers().getGuiHelper();
 
         registration.addRecipeCategories(new MassFabricatorCategory(helper), new ReplicatorCategory(helper));
-    }
-
-    @Override
-    public void registerItemSubtypes(@Nonnull ISubtypeRegistry subtypeRegistry) {
-
-//        subtypeRegistry.useNbtForSubtypes(ItemName.crystal_memory.getItemStack().getItem());
     }
 
     public static class GlobalReplicatorHandler implements IAdvancedGuiHandler<GuiContainer> {
