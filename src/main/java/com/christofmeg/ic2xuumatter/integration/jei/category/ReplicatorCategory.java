@@ -3,7 +3,6 @@ package com.christofmeg.ic2xuumatter.integration.jei.category;
 import java.util.List;
 
 import ic2.core.ref.BlockName;
-import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -58,8 +57,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
         replicator = helper.createDrawable(replicatorTexture, 7, 7, 162, 93);
 
-        ingredient = helper.createDrawableIngredient(new ItemStack(ItemName.crystal_memory.getInstance()));
-
         energy = helper.drawableBuilder(replicatorTexture, 176, 0, 14, 15).buildAnimated(300, StartDirection.TOP, true);
         tankOverlay = helper.createDrawable(replicatorTexture, 48 + 64 * 2, 193, 16, 60);
         patternStorage = helper.drawableBuilder(patternStorageTexture, 7, 19, 162, 62);
@@ -67,6 +64,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageInfobox = helper.drawableBuilder(patternStorageTexture, 7, 45, 162, 36);
         patternStorageArrows = helper.drawableBuilder(modGuiArrows, 0, 0, 36, 25).setTextureSize(36, 25);
         patternStorageSlot = helper.drawableBuilder(patternStorageTexture, 151, 28, 18, 18);
+
+//        ingredient = helper.createDrawableIngredient(ReplicatorCategory.ReplicatorRecipe.getReplicationOutput());
 
     }
 
@@ -109,6 +108,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageSlot.build().draw(minecraft, 10, 95);
         patternStorageSlot.build().draw(minecraft, 144, 104);
 
+//        ingredient.draw(minecraft, 83, 9);
+
     }
 
     @Override
@@ -117,12 +118,18 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 
         List<List<FluidStack>> fluidOutput = ingredients.getOutputs(VanillaTypes.FLUID);
+        List<List<FluidStack>> fluidInput = ingredients.getInputs(VanillaTypes.FLUID);
 
-        guiFluidStacks.init(0, false, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
-
-        guiItemStacks.init(0, false, 0, 64); // empty cell
-        guiItemStacks.init(1, true, 0, 19); // filled cell
-        guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+        if (recipeWrapper.filledCellInput != null) {
+            guiFluidStacks.init(0, false, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
+            guiItemStacks.init(0, false, 0, 64); // empty cell
+            guiItemStacks.init(1, true, 0, 19); // filled cell
+            guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+        } else {
+            guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
+            guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
+            guiItemStacks.init(0, false, 83, 51); // replicationOutput
+        }
 
         guiItemStacks.set(ingredients);
     }
@@ -132,6 +139,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         public ItemStack filledCellInput;
         public ItemStack emptyCellOutput;
         public FluidStack fluidOutput;
+        public FluidStack fluidInput;
+        public ItemStack replicationOutput;
 
         public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
             this.filledCellInput = filledCellInput;
@@ -139,11 +148,22 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             this.fluidOutput = fluidOutput;
         }
 
+        public ReplicatorRecipe(FluidStack fluidInput, ItemStack replicationOutput) {
+            this.fluidInput = fluidInput;
+            this.replicationOutput = replicationOutput;
+        }
+
         @Override
         public void getIngredients(IIngredients ingredients) {
-            ingredients.setInput(VanillaTypes.ITEM, filledCellInput);
-            ingredients.setOutput(VanillaTypes.ITEM, emptyCellOutput);
-            ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
+            if (filledCellInput != null) {
+                ingredients.setInput(VanillaTypes.ITEM, filledCellInput);
+                ingredients.setOutput(VanillaTypes.ITEM, emptyCellOutput);
+                ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
+            } else {
+                ingredients.setInput(VanillaTypes.FLUID, fluidInput);
+                ingredients.setOutput(VanillaTypes.ITEM, replicationOutput);
+            }
+
         }
 
         @Override

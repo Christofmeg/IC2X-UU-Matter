@@ -20,6 +20,8 @@ import ic2.core.ref.BlockName;
 import ic2.core.ref.FluidName;
 import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
+import ic2.core.util.StackUtil;
+import ic2.core.uu.UuGraph;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -63,6 +65,24 @@ public class ModJEIPlugin implements IModPlugin {
         registration.addRecipes(Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
                 Utils.getCellFromFluid(FluidName.uu_matter.getName()), ItemName.cell.getItemStack(CellType.empty),
                 new FluidStack(FluidName.uu_matter.getInstance(), 1000))), ReplicatorCategory.UID);
+
+        UuGraph.iterator().forEachRemaining(item -> {
+            ItemStack stack = item.getKey().copy();
+            ItemStack pattern = StackUtil.emptyStack;
+            pattern = UuGraph.find(stack);
+            if (!StackUtil.isEmpty(pattern)) {
+                if (stack != null && stack.getItem() != null) {
+                    if (item.getValue().toString() != "Infinity") {
+                        int mb = Math.round(item.getValue().intValue());
+                        registration.addRecipes(
+                                Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
+                                        new FluidStack(FluidName.uu_matter.getInstance(), mb), item.getKey())),
+                                ReplicatorCategory.UID);
+                    }
+
+                }
+            }
+        });
 
         registration.addRecipeClickArea(GuiMatter.class, 117, 41, 21, 16, MassFabricatorCategory.UID);
         registration.addRecipeClickArea(GuiReplicator.class, 12, 45, 13, 24, ReplicatorCategory.UID);
