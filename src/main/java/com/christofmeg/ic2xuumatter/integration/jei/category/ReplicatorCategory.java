@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
+import com.christofmeg.ic2xuumatter.utils.Utils;
 
-import ic2.core.item.ItemBattery;
-import ic2.core.item.type.DustResourceType;
 import ic2.core.ref.BlockName;
-import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.Util;
 import ic2.core.uu.UuIndex;
@@ -28,12 +25,9 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.ReplicatorRecipe> {
 
@@ -102,11 +96,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
     @Override
     public void drawExtras(Minecraft minecraft) {
-
         replicator.draw(minecraft, 0, 0);
-
         energy.draw(minecraft, 126, 76);
-
         patternStorageInfobox.build().draw(minecraft, 0, 124);
         patternStorageArrows.build().draw(minecraft, 1, 97);
         patternStorageSlot.build().draw(minecraft, 10, 95);
@@ -126,9 +117,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             guiItemStacks.init(0, false, 0, 64); // empty cell
             guiItemStacks.init(1, true, 0, 19); // filled cell
             guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
-
             guiItemStacks.init(2, true, 144, 75); // batteries
-            guiItemStacks.set(2, this.getValidBatteryList()); // batteries
         } else {
             guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
@@ -136,27 +125,10 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             guiItemStacks.init(1, false, 83, 9); // replicationIngredient
             guiItemStacks.init(2, false, 144, 104); // patternStorageIngredient
             guiItemStacks.init(3, true, 10, 95); // crystalMemory
-
             guiItemStacks.init(4, true, 144, 75); // batteries
-            guiItemStacks.set(4, this.getValidBatteryList()); // batteries
         }
 
         guiItemStacks.set(ingredients);
-    }
-
-    private List<ItemStack> getValidBatteryList() {
-        List<ItemStack> validBatteryList = new ArrayList<>();
-        List<Item> list2 = ImmutableList.copyOf(ForgeRegistries.ITEMS);
-
-        list2.stream().filter(item -> (item instanceof ItemBattery)).forEach(item -> {
-            validBatteryList.add(item.getDefaultInstance());
-        });
-
-        validBatteryList.add(new ItemStack(Items.REDSTONE));
-        validBatteryList.add(new ItemStack(ItemName.single_use_battery.getInstance()));
-        validBatteryList.add(new ItemStack(ItemName.dust.getItemStack(DustResourceType.energium).getItem(), 1, 6));
-
-        return validBatteryList;
     }
 
     public static final class ReplicatorRecipe implements IRecipeWrapper {
@@ -167,30 +139,43 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         public FluidStack fluidInput;
         public ItemStack replicationOutput;
         public ItemStack crystalMemory;
+        public List<ItemStack> batteries;
 
         public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
             this.filledCellInput = filledCellInput;
             this.emptyCellOutput = emptyCellOutput;
             this.fluidOutput = fluidOutput;
+            this.batteries = Utils.getValidBatteryList(true, 4);
         }
 
         public ReplicatorRecipe(FluidStack fluidInput, ItemStack replicationOutput, ItemStack crystalMemory) {
             this.fluidInput = fluidInput;
             this.replicationOutput = replicationOutput;
             this.crystalMemory = crystalMemory;
+            this.batteries = Utils.getValidBatteryList(true, 4);
         }
 
         @Override
         public void getIngredients(IIngredients ingredients) {
             if (filledCellInput != null) {
-                ingredients.setInput(VanillaTypes.ITEM, filledCellInput);
+                List<List<ItemStack>> itemInputSlots = new ArrayList<>();
+                List<ItemStack> stack = new ArrayList<>();
+                stack.add(filledCellInput);
+                itemInputSlots.add(stack);
+                itemInputSlots.add(batteries);
+                ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
                 ingredients.setOutput(VanillaTypes.ITEM, emptyCellOutput);
                 ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
             } else {
                 ingredients.setInput(VanillaTypes.FLUID, fluidInput);
                 ingredients.setOutputs(VanillaTypes.ITEM,
                         Arrays.asList(new ItemStack[] { replicationOutput, replicationOutput, replicationOutput, }));
-                ingredients.setInput(VanillaTypes.ITEM, crystalMemory);
+                List<List<ItemStack>> itemInputSlots = new ArrayList<>();
+                List<ItemStack> stack = new ArrayList<>();
+                stack.add(crystalMemory);
+                itemInputSlots.add(stack);
+                itemInputSlots.add(batteries);
+                ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
             }
         }
 
@@ -222,6 +207,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         }
     }
 
-    // TODO RecipeTransferHandler
+    // TODO Replicator: Recipe Transfer helper
+    // TODO Replicator: drawInfo, energy
 
 }

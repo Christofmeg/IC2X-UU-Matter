@@ -156,9 +156,9 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
             } else if (fluidOutput != null) {
                 font.drawString("1,000,000 " + EU, 0, 70, 4210752);
             }
-
         }
-
     }
+
+    // TODO Matter Fabricator: Recipe Transfer helper
 
 }

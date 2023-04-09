@@ -1,15 +1,13 @@
 package com.christofmeg.ic2xuumatter.integration.jei;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import com.christofmeg.ic2xuumatter.integration.jei.category.MassFabricatorCategory;
 import com.christofmeg.ic2xuumatter.integration.jei.category.ReplicatorCategory;
+import com.christofmeg.ic2xuumatter.integration.jei.category.ScannerCategory;
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.block.machine.gui.GuiMatter;
@@ -26,10 +24,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,6 +41,8 @@ public class ModJEIPlugin implements IModPlugin {
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.replicator), ReplicatorCategory.UID);
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.pattern_storage), ReplicatorCategory.UID);
+
+        registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.scanner), ScannerCategory.UID);
 
         registration.addRecipes(Arrays.asList(
                 new MassFabricatorCategory.MatterFabricatorRecipe(null,
@@ -80,6 +77,11 @@ public class ModJEIPlugin implements IModPlugin {
                         registration.addRecipes(Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
                                 new FluidStack(FluidName.uu_matter.getInstance(), mb), item.getKey(),
                                 Utils.getCrystalMemory(item.getKey()))), ReplicatorCategory.UID);
+
+                        registration
+                                .addRecipes(Collections.singletonList(new ScannerCategory.ScannerRecipe(item.getKey(),
+                                        Utils.getCrystalMemory(item.getKey()))), ScannerCategory.UID);
+
                     }
                 }
             }
@@ -88,13 +90,20 @@ public class ModJEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(GuiMatter.class, 117, 41, 21, 16, MassFabricatorCategory.UID);
         registration.addRecipeClickArea(GuiReplicator.class, 12, 45, 13, 24, ReplicatorCategory.UID);
 
-//        registration.addAdvancedGuiHandlers(new GlobalReplicatorHandler());
-
         /*
+         * IRecipeTransferRegistry transferRegistry =
+         * registration.getRecipeTransferRegistry(); int recipeSlotStart = 1; int
+         * inputsrecipeSlotCount = 1; int inputsinventorySlotStart = 2; int
+         * inventorySlotCount = 36;
+         * transferRegistry.addRecipeTransferHandler(ContainerScanner.class,
+         * ScannerCategory.UID, recipeSlotStart, inputsrecipeSlotCount,
+         * inputsinventorySlotStart, inventorySlotCount);
+         *
+         *
          * int mrecipeSlotStart = 0; int mrecipeSlotCount = 2; int minventorySlotStart =
          * 3; int minventorySlotCount = 39;
          *
-         * // TODO MATTER Fabricator Transfer handler matter
+         *
          * registration.getRecipeTransferRegistry().addRecipeTransferHandler(
          * ContainerMatter.class, MassFabricatorCategory.UID, mrecipeSlotStart,
          * mrecipeSlotCount, minventorySlotStart, minventorySlotCount);
@@ -112,29 +121,8 @@ public class ModJEIPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         IGuiHelper helper = registration.getJeiHelpers().getGuiHelper();
 
-        registration.addRecipeCategories(new MassFabricatorCategory(helper), new ReplicatorCategory(helper));
-    }
-
-    public static class GlobalReplicatorHandler implements IAdvancedGuiHandler<GuiContainer> {
-
-        @Override
-        public List<Rectangle> getGuiExtraAreas(GuiContainer guiContainer) {
-            int x = guiContainer.getGuiLeft() - 124;
-            int y = guiContainer.getGuiTop();
-            Minecraft minecraft = guiContainer.mc;
-            if (minecraft == null) {
-                return Collections.emptyList();
-            }
-            List<Rectangle> areas = new ArrayList<>();
-            areas.add(new Rectangle(x, y, 140, 32));
-            return areas;
-
-        }
-
-        @Override
-        public Class<GuiContainer> getGuiContainerClass() {
-            return GuiContainer.class;
-        }
+        registration.addRecipeCategories(new MassFabricatorCategory(helper), new ReplicatorCategory(helper),
+                new ScannerCategory(helper));
     }
 
 }

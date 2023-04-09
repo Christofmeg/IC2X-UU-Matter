@@ -1,11 +1,44 @@
 package com.christofmeg.ic2xuumatter.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
+import ic2.api.info.Info;
+import ic2.api.item.ElectricItem;
+import ic2.core.item.ItemBattery;
+import ic2.core.item.ItemBatterySU;
 import ic2.core.item.ItemCrystalMemory;
+import ic2.core.item.type.DustResourceType;
 import ic2.core.ref.ItemName;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class Utils {
+
+    public static List<ItemStack> getValidBatteryList(boolean allowRedstoneDust, int machineTier) {
+        List<ItemStack> validBatteryList = new ArrayList<>();
+        List<Item> list = ImmutableList.copyOf(ForgeRegistries.ITEMS);
+        list.stream().filter(item -> (item instanceof ItemBattery || item instanceof ItemBatterySU
+                || accepts(item.getDefaultInstance(), allowRedstoneDust, machineTier))).forEach(item -> {
+                    validBatteryList.add(item.getDefaultInstance());
+                });
+        validBatteryList.add(new ItemStack(ItemName.dust.getItemStack(DustResourceType.energium).getItem(), 1, 6));
+        return validBatteryList;
+    }
+
+    public static boolean accepts(ItemStack stack, boolean allowRedstoneDust, int tier) {
+        if ((stack == null) || (stack.getItem() == Items.REDSTONE && !allowRedstoneDust)) {
+            return false;
+        } else {
+            return Info.itemInfo.getEnergyValue(stack) > 0.0D
+                    || ElectricItem.manager.discharge(stack, Double.POSITIVE_INFINITY, tier, true, true, true) > 0.0D;
+        }
+    }
 
     public static ItemStack getCrystalMemory(ItemStack stack) {
         final ItemStack crystalMemory = ItemName.crystal_memory.getItemStack();
