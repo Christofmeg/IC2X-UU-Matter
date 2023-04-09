@@ -128,10 +128,14 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
             FontRenderer font = minecraft.fontRenderer;
-            String tier = I18n.format("translation.ic2xuumatter.tier");
             int tierFromConfig = ConfigUtil.getInt(MainConfig.get(), "balance/matterFabricatorTier");
-            font.drawString(tier + Integer.toString(tierFromConfig), 0, 0, 4210752);
-            font.drawString("512 EU/t", 0, 12, 4210752);
+            String tier = I18n.format("ic2.item.tooltip.PowerTier", Integer.toString(tierFromConfig));
+
+            String EU = I18n.format("ic2.generic.text.EU");
+            String EUt = I18n.format("ic2.generic.text.EUt");
+
+            font.drawString(tier, 0, 0, 4210752);
+            font.drawString("512 " + EUt, 0, 12, 4210752);
 
             if (scrapInput != null) {
                 if (getAmplifier() != null) {
@@ -143,14 +147,14 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
                     if (getAmplifier() == "5,000") {
                         font.drawString(I18n.format("+ " + getAmplifier()), 6, 48, 4210752);
                     }
-                    font.drawString("166,666 EU", 0, 70, 4210752);
+                    font.drawString("166,666 " + EU, 0, 70, 4210752);
                 }
 
             } else if (outputItem != null) {
-                font.drawString("32 EU", 0, 70, 4210752);
+                font.drawString("32 " + EU, 0, 70, 4210752);
 
             } else if (fluidOutput != null) {
-                font.drawString("1,000,000 EU", 0, 70, 4210752);
+                font.drawString("1,000,000 " + EU, 0, 70, 4210752);
             }
 
         }

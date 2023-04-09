@@ -31,7 +31,6 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -73,7 +72,11 @@ public class ModJEIPlugin implements IModPlugin {
             if (!StackUtil.isEmpty(pattern)) {
                 if (stack != null && stack.getItem() != null) {
                     if (item.getValue() != Double.POSITIVE_INFINITY) {
-                        int mb = MathHelper.roundUp((int) Math.round(item.getValue() / 100), 1);
+                        double mbValue = item.getValue() / 100;
+                        int mb = (int) Math.round(mbValue);
+                        if (mbValue - mb > 0) {
+                            mb += 1;
+                        }
                         registration.addRecipes(Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
                                 new FluidStack(FluidName.uu_matter.getInstance(), mb), item.getKey(),
                                 Utils.getCrystalMemory(item.getKey()))), ReplicatorCategory.UID);

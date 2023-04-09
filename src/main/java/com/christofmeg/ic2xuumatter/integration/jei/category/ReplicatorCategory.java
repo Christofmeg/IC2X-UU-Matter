@@ -7,8 +7,12 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import ic2.core.item.ItemBattery;
+import ic2.core.item.type.DustResourceType;
 import ic2.core.ref.BlockName;
+import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
+import ic2.core.util.Util;
+import ic2.core.uu.UuIndex;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -24,6 +28,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -147,6 +152,10 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             validBatteryList.add(item.getDefaultInstance());
         });
 
+        validBatteryList.add(new ItemStack(Items.REDSTONE));
+        validBatteryList.add(new ItemStack(ItemName.single_use_battery.getInstance()));
+        validBatteryList.add(new ItemStack(ItemName.dust.getItemStack(DustResourceType.energium).getItem(), 1, 6));
+
         return validBatteryList;
     }
 
@@ -188,12 +197,31 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
             FontRenderer font = minecraft.fontRenderer;
-            String tierHV = I18n.format("translation.ic2xuumatter.tier.4");
-            font.drawString(tierHV, 0, 0, 4210752);
+            String tier = I18n.format("ic2.item.tooltip.PowerTier", 4);
+            font.drawString(tier, 0, 0, 4210752);
 
             String patternStorage = BlockName.te.getItemStack(TeBlock.pattern_storage).getDisplayName();
             font.drawString(patternStorage, 54, 108, 4210752);
+
+            String name = I18n.format("ic2.generic.text.Name");
+            String uuMatter = I18n.format("ic2.generic.text.UUMatte");
+            String energy = I18n.format("ic2.generic.text.Energy");
+
+            font.drawString(name, 3, 127, 16777215);
+            font.drawString(uuMatter, 3, 138, 16777215);
+            font.drawString(energy, 3, 149, 16777215);
+
+            if (filledCellInput == null) {
+                String item = replicationOutput.getDisplayName();
+                String EU = I18n.format("ic2.generic.text.EU");
+                font.drawString(item, 73, 127, 16777215);
+                font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(replicationOutput), 4) + "B", 73, 138,
+                        16777215);
+                font.drawString("0 " + EU, 73, 149, 16777215);
+            }
         }
     }
+
+    // TODO RecipeTransferHandler
 
 }
