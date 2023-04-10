@@ -26,7 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCategory.MatterFabricatorRecipe> {
+public class MatterFabricatorCategory implements IRecipeCategory<MatterFabricatorCategory.MatterFabricatorRecipe> {
 
     public static String UID = "ic2xuumatter.matter_fabricator";
 
@@ -36,7 +36,7 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
     public static final ResourceLocation matterFabricatorTexture = new ResourceLocation("ic2",
             "textures/gui/guimatter.png");
 
-    public MassFabricatorCategory(IGuiHelper helper) {
+    public MatterFabricatorCategory(IGuiHelper helper) {
         background = helper.createDrawable(matterFabricatorTexture, 19, 3, 151, 77);
         tankOverlay = helper.createDrawable(matterFabricatorTexture, 48 + 64 * 2, 193, 16, 60);
     }
@@ -157,8 +157,7 @@ public class MassFabricatorCategory implements IRecipeCategory<MassFabricatorCat
                 font.drawString("1,000,000 " + EU, 0, 70, 4210752);
             }
         }
-    }
 
-    // TODO Matter Fabricator: Recipe Transfer helper
+    }
 
 }

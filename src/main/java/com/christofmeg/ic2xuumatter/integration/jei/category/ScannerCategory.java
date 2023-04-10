@@ -7,6 +7,8 @@ import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.ref.BlockName;
 import ic2.core.ref.TeBlock;
+import ic2.core.util.Util;
+import ic2.core.uu.UuIndex;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -72,9 +74,15 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, ScannerRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+//        guiItemStacks.init(0, true, 47, 22); // scannableItem
+//        guiItemStacks.init(1, false, 144, 52); // crystalMemory output
+//        guiItemStacks.init(2, true, 0, 30); // batteries
+
         guiItemStacks.init(0, true, 47, 22); // scannableItem
-        guiItemStacks.init(1, false, 144, 52); // crystalMemory output
+//        guiItemStacks.init(1, true, 144, 52); // crystalMemory input
         guiItemStacks.init(2, true, 0, 30); // batteries
+        guiItemStacks.init(3, false, 144, 52); // crystalMemory output
+
         guiItemStacks.set(ingredients);
     }
 
@@ -94,6 +102,7 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
             List<List<ItemStack>> itemInputSlots = new ArrayList<>();
             List<ItemStack> stack = new ArrayList<>();
             stack.add(scannableItem);
+//            stack.add(ItemName.crystal_memory.getItemStack());
             itemInputSlots.add(stack);
             itemInputSlots.add(batteries);
             ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
@@ -105,11 +114,13 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
             FontRenderer font = minecraft.fontRenderer;
             String tier = I18n.format("ic2.item.tooltip.PowerTier", 4);
             font.drawString(tier, 0, 0, 4210752);
+            String EU = I18n.format("ic2.generic.text.EU");
+            font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(scannableItem), 4) + "B", 96, 13, 16777215);
+            font.drawString("0 " + EU, 96, 24, 16777215);
         }
     }
 
     // TODO Scanner: Recipe Transfer helper
     // TODO Scanner: drawInfo, energy
-    // TODO Scanner: GuiClickArea
 
 }
