@@ -14,12 +14,14 @@ import com.christofmeg.ic2xuumatter.utils.Utils;
 import ic2.core.block.machine.gui.GuiMatter;
 import ic2.core.block.machine.gui.GuiReplicator;
 import ic2.core.block.machine.gui.GuiScanner;
+import ic2.core.init.MainConfig;
 import ic2.core.item.type.CellType;
 import ic2.core.item.type.CraftingItemType;
 import ic2.core.ref.BlockName;
 import ic2.core.ref.FluidName;
 import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
+import ic2.core.util.ConfigUtil;
 import ic2.core.util.StackUtil;
 import ic2.core.uu.UuGraph;
 import mezz.jei.api.IGuiHelper;
@@ -53,18 +55,33 @@ public class ModJEIPlugin implements IModPlugin {
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.scanner), ScannerCategory.UID);
 
-        registration.addRecipes(Arrays.asList(
-                new MatterFabricatorCategory.MatterFabricatorRecipe(null,
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1), null),
-                new MatterFabricatorCategory.MatterFabricatorRecipe(
-                        new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap).getItem(), 34, 23),
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1), "5,000"),
-                new MatterFabricatorCategory.MatterFabricatorRecipe(
-                        new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap_box).getItem(), 4, 24),
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1), "45,000"),
-                new MatterFabricatorCategory.MatterFabricatorRecipe(
-                        new FluidStack(FluidName.uu_matter.getInstance(), 1000), ItemName.fluid_cell.getItemStack(),
-                        Utils.getCellFromFluid(FluidName.uu_matter.getName()))),
+        int scrapBoxCount = Math.round(4 * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"));
+        int scrapCount = Math.round(34 * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"));
+        if (scrapCount > 1)
+            scrapCount = 1;
+        if (scrapBoxCount > 1)
+            scrapBoxCount = 1;
+
+        registration.addRecipes(
+                Arrays.asList(
+                        new MatterFabricatorCategory.MatterFabricatorRecipe(null,
+                                new FluidStack(FluidName.uu_matter.getInstance(), 1), null),
+
+                        new MatterFabricatorCategory.MatterFabricatorRecipe(
+                                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap).getItem(),
+                                        scrapCount, 23),
+                                new FluidStack(FluidName.uu_matter.getInstance(), 1), "5,000"),
+
+                        new MatterFabricatorCategory.MatterFabricatorRecipe(
+                                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.scrap_box).getItem(),
+                                        scrapBoxCount, 24),
+                                new FluidStack(FluidName.uu_matter.getInstance(), 1), "45,000"),
+
+                        new MatterFabricatorCategory.MatterFabricatorRecipe(
+                                new FluidStack(FluidName.uu_matter.getInstance(), 1000),
+                                ItemName.fluid_cell.getItemStack(),
+                                Utils.getCellFromFluid(FluidName.uu_matter.getName()))),
+
                 MatterFabricatorCategory.UID);
 
         registration.addRecipes(Collections.singletonList(new ReplicatorCategory.ReplicatorRecipe(
@@ -106,13 +123,6 @@ public class ModJEIPlugin implements IModPlugin {
                 MatterFabricatorCategory.UID);
 
         /*
-         * int replicatorRecipeSlotStart = 36; int replicatorInputsRecipeSlotCount = 3;
-         * int replicatorInputsInventorySlotStart = 0; int replicatorInventorySlotCount
-         * = 36; registration.getRecipeTransferRegistry().addRecipeTransferHandler(
-         * ContainerReplicator.class, ReplicatorCategory.UID, replicatorRecipeSlotStart,
-         * replicatorInputsRecipeSlotCount, replicatorInputsInventorySlotStart,
-         * replicatorInventorySlotCount);
-         *
          * int scannerRecipeSlotStart = 36; int scannerInputsRecipeSlotCount = 3; int
          * scannerInputsInventorySlotStart = 0; int scannerInventorySlotCount = 36;
          * registration.getRecipeTransferRegistry().addRecipeTransferHandler(

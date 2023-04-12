@@ -147,14 +147,18 @@ public class MatterFabricatorCategory implements IRecipeCategory<MatterFabricato
                     if (getAmplifier() == "5,000") {
                         font.drawString(I18n.format("+ " + getAmplifier()), 6, 48, 4210752);
                     }
-                    font.drawString("166,666 " + EU, 0, 70, 4210752);
+                    font.drawString(
+                            Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor") / 6)
+                                    + " " + EU,
+                            0, 70, 4210752);
                 }
 
             } else if (outputItem != null) {
-                font.drawString("32 " + EU, 0, 70, 4210752);
+                font.drawString("512 " + EU, 0, 70, 4210752);
 
             } else if (fluidOutput != null) {
-                font.drawString("1,000,000 " + EU, 0, 70, 4210752);
+                font.drawString(Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"))
+                        + " " + EU, 0, 70, 4210752);
             }
         }
 

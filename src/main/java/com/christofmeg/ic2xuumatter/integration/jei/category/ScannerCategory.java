@@ -102,7 +102,6 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
             List<List<ItemStack>> itemInputSlots = new ArrayList<>();
             List<ItemStack> stack = new ArrayList<>();
             stack.add(scannableItem);
-//            stack.add(ItemName.crystal_memory.getItemStack());
             itemInputSlots.add(stack);
             itemInputSlots.add(batteries);
             ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
@@ -116,7 +115,9 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
             font.drawString(tier, 0, 0, 4210752);
             String EU = I18n.format("ic2.generic.text.EU");
             font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(scannableItem), 4) + "B", 96, 13, 16777215);
-            font.drawString("0 " + EU, 96, 24, 16777215);
+            font.drawString(Util.toSiString(UuIndex.instance.get(scannableItem) * 51.2, 4) + " " + EU, 96, 24,
+                    16777215);
+
         }
     }
 

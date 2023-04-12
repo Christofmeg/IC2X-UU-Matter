@@ -74,7 +74,7 @@ public class TransferHandlerMatterFabricator implements IRecipeTransferHandler<C
         emptyCellList.add(emptyCell);
 
         if (input != null) {
-            if (input.toString().contains("4x")) {
+            if (!input.isEmpty() && input.get(0).getTranslationKey().toString().contains("scrap")) {
                 this.transferHelper = new BasicRecipeTransferInfo<>(ContainerMatter.class, MatterFabricatorCategory.UID,
                         36, 1, 0, 36);
             } else {
