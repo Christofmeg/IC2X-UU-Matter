@@ -13,6 +13,7 @@ import com.christofmeg.ic2xuumatter.integration.jei.handler.TransferHandlerMatte
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.block.machine.container.ContainerPatternStorage;
+import ic2.core.block.machine.container.ContainerReplicator;
 import ic2.core.block.machine.container.ContainerScanner;
 import ic2.core.block.machine.gui.GuiMatter;
 import ic2.core.block.machine.gui.GuiPatternStorage;
@@ -124,7 +125,6 @@ public class ModJEIPlugin implements IModPlugin {
                                 Collections.singletonList(new PatternStorageCategory.PatternStorageRecipe(
                                         Utils.getCrystalMemory(item.getKey()), item.getKey())),
                                 PatternStorageCategory.UID);
-
                     }
                 }
             }
@@ -142,6 +142,10 @@ public class ModJEIPlugin implements IModPlugin {
                 MatterFabricatorCategory.UID);
         recipeTransferRegistry.addRecipeTransferHandler(ContainerPatternStorage.class, PatternStorageCategory.UID, 36,
                 1, 0, 36);
+
+        recipeTransferRegistry.addRecipeTransferHandler(ContainerReplicator.class, ReplicatorCategory.UID, 38, 2, 0,
+                36);
+
         recipeTransferRegistry.addRecipeTransferHandler(ContainerScanner.class, ScannerCategory.UID, 37, 2, 0, 36);
 
     }

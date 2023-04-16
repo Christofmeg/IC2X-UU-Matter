@@ -7,6 +7,7 @@ import java.util.List;
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.ref.BlockName;
+import ic2.core.ref.FluidName;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.Util;
 import ic2.core.uu.UuIndex;
@@ -71,7 +72,6 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageInfobox = helper.drawableBuilder(patternStorageTexture, 7, 45, 162, 36);
         patternStorageArrows = helper.drawableBuilder(modGuiArrows, 0, 0, 36, 25).setTextureSize(36, 25);
         patternStorageSlot = helper.drawableBuilder(patternStorageTexture, 151, 28, 18, 18);
-
     }
 
     @Override
@@ -105,6 +105,9 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         patternStorageSlot.build().draw(minecraft, 144, 104);
     }
 
+    /*
+     * Tell recipe transfer handler what items to transfer
+     */
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, ReplicatorRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
@@ -119,7 +122,11 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
             guiItemStacks.init(0, false, 0, 64); // empty cell
             guiItemStacks.init(1, true, 0, 19); // filled cell
-            guiItemStacks.init(2, true, 144, 75); // batteries
+            guiItemStacks.init(2, false, 144, 75); // batteries
+
+            guiItemStacks.set(0, recipeWrapper.emptyCellOutput); // empty cell
+            guiItemStacks.set(1, recipeWrapper.filledCellInput); // filled cell
+            guiItemStacks.set(2, recipeWrapper.batteries); // batteries
         } else {
             guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
@@ -127,14 +134,17 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             guiItemStacks.init(0, false, 83, 51); // replicationOutput
             guiItemStacks.init(1, false, 83, 9); // replicationIngredient
             guiItemStacks.init(2, false, 144, 104); // patternStorageIngredient
-            guiItemStacks.init(3, true, 10, 95); // crystalMemory
-            guiItemStacks.init(4, true, 144, 75); // batteries
+            guiItemStacks.init(3, false, 10, 95); // crystalMemory
+            guiItemStacks.init(4, false, 144, 75); // batteries
+            guiItemStacks.init(5, true, 0, 19); // filled cell
 
-            guiItemStacks.set(1, recipeWrapper.replicationOutput);
-            guiItemStacks.set(2, recipeWrapper.replicationOutput);
+            guiItemStacks.set(0, recipeWrapper.replicationOutput); // replicationOutput
+            guiItemStacks.set(1, recipeWrapper.replicationOutput); // replicationIngredient
+            guiItemStacks.set(2, recipeWrapper.replicationOutput); // patternStorageIngredient
+            guiItemStacks.set(3, recipeWrapper.crystalMemory); // crystalMemory
+            guiItemStacks.set(4, recipeWrapper.batteries); // batteries
+            guiItemStacks.set(5, Utils.getCellFromFluid(FluidName.uu_matter.getName())); // filled cell
         }
-
-        guiItemStacks.set(ingredients);
     }
 
     public static final class ReplicatorRecipe implements IRecipeWrapper {
@@ -145,22 +155,23 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         public FluidStack fluidInput;
         public ItemStack replicationOutput;
         public ItemStack crystalMemory;
-        public List<ItemStack> batteries;
+        public List<ItemStack> batteries = Utils.getValidBatteryList(true, 4);
 
         public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
             this.filledCellInput = filledCellInput;
             this.emptyCellOutput = emptyCellOutput;
             this.fluidOutput = fluidOutput;
-            this.batteries = Utils.getValidBatteryList(true, 4);
         }
 
         public ReplicatorRecipe(FluidStack fluidInput, ItemStack replicationOutput, ItemStack crystalMemory) {
             this.fluidInput = fluidInput;
             this.replicationOutput = replicationOutput;
             this.crystalMemory = crystalMemory;
-            this.batteries = Utils.getValidBatteryList(true, 4);
         }
 
+        /*
+         * Tells JEI what items can be used in a recipe & item 'U' usage
+         */
         @Override
         public void getIngredients(IIngredients ingredients) {
             List<List<ItemStack>> itemInputSlots = new ArrayList<>();
@@ -214,6 +225,4 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         }
     }
 
-    // TODO Replicator: Recipe Transfer helper
-    // TODO fix item recipe and usage
 }

@@ -34,6 +34,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+/*
+ * @param mezz.jei.transfer.PlayerRecipeTransferHandler
+ * https://github.com/mezz/JustEnoughItems/blob/1.12/src/main/java/mezz/jei/transfer/PlayerRecipeTransferHandler.java
+ */
+
 public class TransferHandlerMatterFabricator implements IRecipeTransferHandler<ContainerMatter> {
 
     private final StackHelper stackHelper;
