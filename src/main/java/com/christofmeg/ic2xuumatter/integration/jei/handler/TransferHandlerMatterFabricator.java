@@ -72,14 +72,15 @@ public class TransferHandlerMatterFabricator implements IRecipeTransferHandler<C
         scrapList.add(scrap);
         scrapBoxList.add(scrapBox);
         emptyCellList.add(emptyCell);
-
         if (input != null) {
             if (!input.isEmpty() && input.get(0).getTranslationKey().toString().contains("scrap")) {
                 this.transferHelper = new BasicRecipeTransferInfo<>(ContainerMatter.class, MatterFabricatorCategory.UID,
                         36, 1, 0, 36);
-            } else {
+            } else if (!input.isEmpty() && input.get(0).getTranslationKey().toString().contains("fluid_cell")) {
                 this.transferHelper = new BasicRecipeTransferInfo<>(ContainerMatter.class, MatterFabricatorCategory.UID,
                         38, 1, 0, 36);
+            } else {
+                return null;
             }
         }
 

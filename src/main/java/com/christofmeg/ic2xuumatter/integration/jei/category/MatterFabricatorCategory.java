@@ -133,9 +133,9 @@ public class MatterFabricatorCategory implements IRecipeCategory<MatterFabricato
 
             String EU = I18n.format("ic2.generic.text.EU");
             String EUt = I18n.format("ic2.generic.text.EUt");
-
+            int tierEU = (int) Math.pow(4, (tierFromConfig + 1)) * 2;
             font.drawString(tier, 0, 0, 4210752);
-            font.drawString("512 " + EUt, 0, 12, 4210752);
+            font.drawString(tierEU + " " + EUt, 0, 12, 4210752);
 
             if (scrapInput != null) {
                 if (getAmplifier() != null) {
@@ -147,18 +147,18 @@ public class MatterFabricatorCategory implements IRecipeCategory<MatterFabricato
                     if (getAmplifier() == "5,000") {
                         font.drawString(I18n.format("+ " + getAmplifier()), 6, 48, 4210752);
                     }
-                    font.drawString(
-                            Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor") / 6)
-                                    + " " + EU,
-                            0, 70, 4210752);
+                    double euRaw = Double.parseDouble("" + Math
+                            .round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor") / 6));
+                    font.drawString(String.format("%,.0f", euRaw) + " " + EU, 0, 70, 4210752);
                 }
 
             } else if (outputItem != null) {
                 font.drawString("512 " + EU, 0, 70, 4210752);
 
             } else if (fluidOutput != null) {
-                font.drawString(Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"))
-                        + " " + EU, 0, 70, 4210752);
+                double euRaw = Double.parseDouble(
+                        "" + Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor")));
+                font.drawString(String.format("%,.0f", euRaw) + " " + EU, 0, 70, 4210752);
             }
         }
 

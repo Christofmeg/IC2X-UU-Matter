@@ -6,6 +6,7 @@ import java.util.List;
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
 import ic2.core.ref.BlockName;
+import ic2.core.ref.ItemName;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.Util;
 import ic2.core.uu.UuIndex;
@@ -37,7 +38,7 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
     public static final ResourceLocation commonTexture = new ResourceLocation("ic2", "textures/gui/common.png");
 
     public ScannerCategory(IGuiHelper helper) {
-        background = helper.createBlankDrawable(162, 70);
+        background = helper.createBlankDrawable(162, 78);
         scanner = helper.createDrawable(scannerTexture, 7, 19, 162, 63);
         energy = helper.drawableBuilder(commonTexture, 113, 64, 14, 15).buildAnimated(300, StartDirection.TOP, true);
         progress = helper.drawableBuilder(scannerTexture, 176, 14, 66, 43).buildAnimated(50, StartDirection.LEFT,
@@ -74,38 +75,47 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, ScannerRecipe recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-//        guiItemStacks.init(0, true, 47, 22); // scannableItem
-//        guiItemStacks.init(1, false, 144, 52); // crystalMemory output
-//        guiItemStacks.init(2, true, 0, 30); // batteries
 
         guiItemStacks.init(0, true, 47, 22); // scannableItem
-//        guiItemStacks.init(1, true, 144, 52); // crystalMemory input
-        guiItemStacks.init(2, true, 0, 30); // batteries
-        guiItemStacks.init(3, false, 144, 52); // crystalMemory output
+        guiItemStacks.init(1, false, 144, 52); // crystalMemory output
+        guiItemStacks.init(2, false, 0, 30); // batteries
+        guiItemStacks.init(3, true, 144, 52); // crystalMemory input
 
-        guiItemStacks.set(ingredients);
+        List<ItemStack> crystalMemoryList = new ArrayList<>();
+        crystalMemoryList.add(ItemName.crystal_memory.getItemStack());
+        crystalMemoryList.add(recipeWrapper.crystalMemory);
+
+        guiItemStacks.set(0, recipeWrapper.scannableItem); // scannableItem
+        guiItemStacks.set(1, recipeWrapper.crystalMemory); // crystalMemory output
+        guiItemStacks.set(2, Utils.getValidBatteryList(true, 4)); // batteries
+        guiItemStacks.set(3, crystalMemoryList); // crystalMemory input
     }
 
     public static final class ScannerRecipe implements IRecipeWrapper {
         public ItemStack scannableItem;
         public ItemStack crystalMemory;
-        public List<ItemStack> batteries;
 
         public ScannerRecipe(ItemStack scannableItem, ItemStack crystalMemory) {
             this.scannableItem = scannableItem;
             this.crystalMemory = crystalMemory;
-            this.batteries = Utils.getValidBatteryList(true, 4);
         }
 
+        /*
+         * Tells JEI what items can be used in a recipe & item 'U' usage
+         */
         @Override
         public void getIngredients(IIngredients ingredients) {
             List<List<ItemStack>> itemInputSlots = new ArrayList<>();
             List<ItemStack> stack = new ArrayList<>();
             stack.add(scannableItem);
             itemInputSlots.add(stack);
-            itemInputSlots.add(batteries);
-            ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
+
+            List<ItemStack> crystalMemoryList = new ArrayList<>();
+            crystalMemoryList.add(ItemName.crystal_memory.getItemStack());
+            itemInputSlots.add(crystalMemoryList);
+
             ingredients.setOutput(VanillaTypes.ITEM, crystalMemory);
+            ingredients.setInputLists(VanillaTypes.ITEM, itemInputSlots);
         }
 
         @Override
@@ -114,14 +124,11 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
             String tier = I18n.format("ic2.item.tooltip.PowerTier", 4);
             font.drawString(tier, 0, 0, 4210752);
             String EU = I18n.format("ic2.generic.text.EU");
-            font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(scannableItem), 4) + "B", 96, 13, 16777215);
-            font.drawString(Util.toSiString(UuIndex.instance.get(scannableItem) * 51.2, 4) + " " + EU, 96, 24,
+            font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(scannableItem), 2) + "B", 96, 13, 16777215);
+            font.drawString(Util.toSiString((UuIndex.instance.get(scannableItem) / 10) * 512, 3) + " " + EU, 96, 24,
                     16777215);
-
+            font.drawString("844,800 " + EU, 0, 72, 4210752);
         }
     }
-
-    // TODO Scanner: Recipe Transfer helper
-    // TODO Scanner: drawInfo, energy
 
 }

@@ -3,9 +3,9 @@ package com.christofmeg.ic2xuumatter.integration.jei.handler;
 import javax.annotation.Nonnull;
 
 import com.christofmeg.ic2xuumatter.IC2XUUMatter;
-import com.christofmeg.ic2xuumatter.integration.jei.category.ScannerCategory;
+import com.christofmeg.ic2xuumatter.integration.jei.category.ReplicatorCategory;
 
-import ic2.core.block.machine.container.ContainerScanner;
+import ic2.core.block.machine.container.ContainerReplicator;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -13,20 +13,20 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 
-public class TransferHandlerScanner implements IRecipeTransferHandler<ContainerScanner> {
+public class TransferHandlerReplicator2 implements IRecipeTransferHandler<ContainerReplicator> {
 
     @Override
-    public Class<ContainerScanner> getContainerClass() {
-        return ContainerScanner.class;
+    public Class<ContainerReplicator> getContainerClass() {
+        return ContainerReplicator.class;
     }
 
     @Nonnull
     public String getRecipeCategoryUid() {
-        return ScannerCategory.UID;
+        return ReplicatorCategory.UID;
     }
 
     @Override
-    public IRecipeTransferError transferRecipe(ContainerScanner container, IRecipeLayout recipeLayout,
+    public IRecipeTransferError transferRecipe(ContainerReplicator container, IRecipeLayout recipeLayout,
             EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
         if (doTransfer) {
             for (Slot slot : container.inventorySlots) {

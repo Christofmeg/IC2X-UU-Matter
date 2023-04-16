@@ -81,7 +81,8 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
     @Override
     public String getTitle() {
-        return BlockName.te.getItemStack(TeBlock.replicator).getDisplayName();
+        String replication = I18n.format("ic2xuumatter.jei.tooltip.replication");
+        return replication;
     }
 
     @Override
@@ -114,18 +115,23 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
         if (recipeWrapper.filledCellInput != null) {
             guiFluidStacks.init(0, false, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
+            guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
+
             guiItemStacks.init(0, false, 0, 64); // empty cell
             guiItemStacks.init(1, true, 0, 19); // filled cell
-            guiFluidStacks.set(0, fluidOutput.get(0)); // uu matter
             guiItemStacks.init(2, true, 144, 75); // batteries
         } else {
             guiFluidStacks.init(0, true, 24, 27, 12, 47, 16000, true, tankOverlay); // uu matter
             guiFluidStacks.set(0, fluidInput.get(0)); // uu matter
+
             guiItemStacks.init(0, false, 83, 51); // replicationOutput
             guiItemStacks.init(1, false, 83, 9); // replicationIngredient
             guiItemStacks.init(2, false, 144, 104); // patternStorageIngredient
             guiItemStacks.init(3, true, 10, 95); // crystalMemory
             guiItemStacks.init(4, true, 144, 75); // batteries
+
+            guiItemStacks.set(1, recipeWrapper.replicationOutput);
+            guiItemStacks.set(2, recipeWrapper.replicationOutput);
         }
 
         guiItemStacks.set(ingredients);
@@ -157,9 +163,9 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
 
         @Override
         public void getIngredients(IIngredients ingredients) {
+            List<List<ItemStack>> itemInputSlots = new ArrayList<>();
+            List<ItemStack> stack = new ArrayList<>();
             if (filledCellInput != null) {
-                List<List<ItemStack>> itemInputSlots = new ArrayList<>();
-                List<ItemStack> stack = new ArrayList<>();
                 stack.add(filledCellInput);
                 itemInputSlots.add(stack);
                 itemInputSlots.add(batteries);
@@ -168,10 +174,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
                 ingredients.setOutput(VanillaTypes.FLUID, fluidOutput);
             } else {
                 ingredients.setInput(VanillaTypes.FLUID, fluidInput);
-                ingredients.setOutputs(VanillaTypes.ITEM,
-                        Arrays.asList(new ItemStack[] { replicationOutput, replicationOutput, replicationOutput, }));
-                List<List<ItemStack>> itemInputSlots = new ArrayList<>();
-                List<ItemStack> stack = new ArrayList<>();
+                ingredients.setOutputs(VanillaTypes.ITEM, Arrays.asList(new ItemStack[] { replicationOutput }));
                 stack.add(crystalMemory);
                 itemInputSlots.add(stack);
                 itemInputSlots.add(batteries);
@@ -197,17 +200,20 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
             font.drawString(energy, 3, 149, 16777215);
 
             if (filledCellInput == null) {
-                String item = replicationOutput.getDisplayName();
                 String EU = I18n.format("ic2.generic.text.EU");
+                font.drawString(Util.toSiString((UuIndex.instance.get(replicationOutput) / 10) * 512, 3) + " " + EU, 0,
+                        85, 4210752);
+
+                String item = replicationOutput.getDisplayName();
                 font.drawString(item, 73, 127, 16777215);
-                font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(replicationOutput), 4) + "B", 73, 138,
+                font.drawString(Util.toSiString(UuIndex.instance.getInBuckets(replicationOutput), 2) + "B", 73, 138,
                         16777215);
-                font.drawString("0 " + EU, 73, 149, 16777215);
+                font.drawString(Util.toSiString((UuIndex.instance.get(replicationOutput) / 10) * 512, 3) + " " + EU, 73,
+                        149, 16777215);
             }
         }
     }
 
     // TODO Replicator: Recipe Transfer helper
-    // TODO Replicator: drawInfo, energy
-
+    // TODO fix item recipe and usage
 }

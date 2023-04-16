@@ -6,12 +6,16 @@ import java.util.Collections;
 import javax.annotation.Nonnull;
 
 import com.christofmeg.ic2xuumatter.integration.jei.category.MatterFabricatorCategory;
+import com.christofmeg.ic2xuumatter.integration.jei.category.PatternStorageCategory;
 import com.christofmeg.ic2xuumatter.integration.jei.category.ReplicatorCategory;
 import com.christofmeg.ic2xuumatter.integration.jei.category.ScannerCategory;
 import com.christofmeg.ic2xuumatter.integration.jei.handler.TransferHandlerMatterFabricator;
 import com.christofmeg.ic2xuumatter.utils.Utils;
 
+import ic2.core.block.machine.container.ContainerPatternStorage;
+import ic2.core.block.machine.container.ContainerScanner;
 import ic2.core.block.machine.gui.GuiMatter;
+import ic2.core.block.machine.gui.GuiPatternStorage;
 import ic2.core.block.machine.gui.GuiReplicator;
 import ic2.core.block.machine.gui.GuiScanner;
 import ic2.core.init.MainConfig;
@@ -28,6 +32,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -43,6 +48,11 @@ public class ModJEIPlugin implements IModPlugin {
     public static IModRegistry registration;
 
     @Override
+    public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
+        subtypeRegistry.useNbtForSubtypes(ItemName.crystal_memory.getInstance());
+    }
+
+    @Override
     public void register(@Nonnull IModRegistry registration) {
 
         ModJEIPlugin.registration = registration;
@@ -51,15 +61,17 @@ public class ModJEIPlugin implements IModPlugin {
                 MatterFabricatorCategory.UID);
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.replicator), ReplicatorCategory.UID);
+
+        registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.pattern_storage), PatternStorageCategory.UID);
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.pattern_storage), ReplicatorCategory.UID);
 
         registration.addRecipeCatalyst(BlockName.te.getItemStack(TeBlock.scanner), ScannerCategory.UID);
 
         int scrapBoxCount = Math.round(4 * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"));
         int scrapCount = Math.round(34 * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor"));
-        if (scrapCount > 1)
+        if (scrapCount < 1)
             scrapCount = 1;
-        if (scrapBoxCount > 1)
+        if (scrapBoxCount < 1)
             scrapBoxCount = 1;
 
         registration.addRecipes(
@@ -107,12 +119,19 @@ public class ModJEIPlugin implements IModPlugin {
                         registration
                                 .addRecipes(Collections.singletonList(new ScannerCategory.ScannerRecipe(item.getKey(),
                                         Utils.getCrystalMemory(item.getKey()))), ScannerCategory.UID);
+
+                        registration.addRecipes(
+                                Collections.singletonList(new PatternStorageCategory.PatternStorageRecipe(
+                                        Utils.getCrystalMemory(item.getKey()), item.getKey())),
+                                PatternStorageCategory.UID);
+
                     }
                 }
             }
         });
 
         registration.addRecipeClickArea(GuiMatter.class, 117, 41, 21, 16, MatterFabricatorCategory.UID);
+        registration.addRecipeClickArea(GuiPatternStorage.class, 47, 19, 103, 24, PatternStorageCategory.UID);
         registration.addRecipeClickArea(GuiReplicator.class, 12, 45, 13, 24, ReplicatorCategory.UID);
         registration.addRecipeClickArea(GuiScanner.class, 26, 21, 22, 41, ScannerCategory.UID);
 
@@ -121,22 +140,17 @@ public class ModJEIPlugin implements IModPlugin {
         recipeTransferRegistry.addRecipeTransferHandler(
                 new TransferHandlerMatterFabricator(jeiHelpers.recipeTransferHandlerHelper()),
                 MatterFabricatorCategory.UID);
+        recipeTransferRegistry.addRecipeTransferHandler(ContainerPatternStorage.class, PatternStorageCategory.UID, 36,
+                1, 0, 36);
+        recipeTransferRegistry.addRecipeTransferHandler(ContainerScanner.class, ScannerCategory.UID, 37, 2, 0, 36);
 
-        /*
-         * int scannerRecipeSlotStart = 36; int scannerInputsRecipeSlotCount = 3; int
-         * scannerInputsInventorySlotStart = 0; int scannerInventorySlotCount = 36;
-         * registration.getRecipeTransferRegistry().addRecipeTransferHandler(
-         * ContainerScanner.class, ScannerCategory.UID, scannerRecipeSlotStart,
-         * scannerInputsRecipeSlotCount, scannerInputsInventorySlotStart,
-         * scannerInventorySlotCount);
-         */
     }
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         IGuiHelper helper = registration.getJeiHelpers().getGuiHelper();
-        registration.addRecipeCategories(new MatterFabricatorCategory(helper), new ReplicatorCategory(helper),
-                new ScannerCategory(helper));
+        registration.addRecipeCategories(new MatterFabricatorCategory(helper), new PatternStorageCategory(helper),
+                new ReplicatorCategory(helper), new ScannerCategory(helper));
     }
 
 }
