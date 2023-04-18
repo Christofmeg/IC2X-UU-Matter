@@ -11,7 +11,7 @@ apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 
-version = "1.12.2-1.0.0"
+version = "1.12.2-1.1.0"
 group = "com.christofmeg.ic2xuumatter"
 archivesBaseName = "ic2xuumatter"
 

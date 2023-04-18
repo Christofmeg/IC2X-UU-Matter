@@ -160,6 +160,7 @@ public class MatterFabricatorCategory implements IRecipeCategory<MatterFabricato
                         "" + Math.round(1000000.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor")));
                 font.drawString(String.format("%,.0f", euRaw) + " " + EU, 0, 70, 4210752);
             }
+
         }
 
     }

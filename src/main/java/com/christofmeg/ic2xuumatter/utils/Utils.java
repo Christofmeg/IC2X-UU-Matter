@@ -20,14 +20,22 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class Utils {
 
+    public static List<ItemStack> getValidExperimentalBatteryList(boolean allowRedstoneDust, int machineTier) {
+        List<ItemStack> validBatteryList = new ArrayList<>();
+        validBatteryList.addAll(getValidBatteryList(allowRedstoneDust, machineTier));
+        validBatteryList.add(new ItemStack(ItemName.dust.getItemStack(DustResourceType.energium).getItem(), 1, 6));
+        return validBatteryList;
+    }
+
     public static List<ItemStack> getValidBatteryList(boolean allowRedstoneDust, int machineTier) {
         List<ItemStack> validBatteryList = new ArrayList<>();
         List<Item> list = ImmutableList.copyOf(ForgeRegistries.ITEMS);
-        list.stream().filter(item -> (item instanceof ItemBattery || item instanceof ItemBatterySU
-                || accepts(item.getDefaultInstance(), allowRedstoneDust, machineTier))).forEach(item -> {
+        list.stream().filter(item -> (item instanceof ItemBattery
+                || item instanceof ItemBatterySU | accepts(item.getDefaultInstance(), allowRedstoneDust, machineTier)))
+                .forEach(item -> {
                     validBatteryList.add(item.getDefaultInstance());
                 });
-        validBatteryList.add(new ItemStack(ItemName.dust.getItemStack(DustResourceType.energium).getItem(), 1, 6));
+
         return validBatteryList;
     }
 

@@ -155,7 +155,7 @@ public class ReplicatorCategory implements IRecipeCategory<ReplicatorCategory.Re
         public FluidStack fluidInput;
         public ItemStack replicationOutput;
         public ItemStack crystalMemory;
-        public List<ItemStack> batteries = Utils.getValidBatteryList(true, 4);
+        public List<ItemStack> batteries = Utils.getValidExperimentalBatteryList(true, 4);
 
         public ReplicatorRecipe(ItemStack filledCellInput, ItemStack emptyCellOutput, FluidStack fluidOutput) {
             this.filledCellInput = filledCellInput;

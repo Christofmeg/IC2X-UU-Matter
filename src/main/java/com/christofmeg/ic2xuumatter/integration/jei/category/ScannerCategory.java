@@ -87,7 +87,7 @@ public class ScannerCategory implements IRecipeCategory<ScannerCategory.ScannerR
 
         guiItemStacks.set(0, recipeWrapper.scannableItem); // scannableItem
         guiItemStacks.set(1, recipeWrapper.crystalMemory); // crystalMemory output
-        guiItemStacks.set(2, Utils.getValidBatteryList(true, 4)); // batteries
+        guiItemStacks.set(2, Utils.getValidExperimentalBatteryList(true, 4)); // batteries
         guiItemStacks.set(3, crystalMemoryList); // crystalMemory input
     }
 
