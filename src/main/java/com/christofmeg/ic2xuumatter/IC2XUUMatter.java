@@ -10,14 +10,8 @@ import net.minecraftforge.fml.common.Mod;
 public class IC2XUUMatter {
     public static final String MODID = "ic2xuumatter";
     public static final String NAME = "IC2X UU-Matter";
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.1.1";
 
     public static final Logger log = LogManager.getLogger(MODID);
 
 }
-
-//TODO add support for IC2.ini [profiles] selected = Classic / Experimental
-
-/*
- * UU-Matter item; Mass Fabricator
- */
